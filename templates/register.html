@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8"/>
+    <meta            content="width=device-width, initial-scale=1.0"            name="viewport"    />
+    <meta            content="ie=edge"            http-equiv="X-UA-Compatible"    />
+    <title>Registration</title>
+    <link            crossorigin="anonymous"            href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"            integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T"            rel="stylesheet"    />
+    <link
+            crossorigin="anonymous"
+            href="https://use.fontawesome.com/releases/v5.8.1/css/all.css"
+            integrity="sha384-50oBUHEmvpQ+1lW4y57PTFmhCaXp0ML5d60M1M7uH2+nqUivzIebhndOJK28anvf"
+            rel="stylesheet"
+    />
+</head>
+<noscript>
+    <div
+            class="alert alert-danger"
+            role="alert"
+            style="
+				position: fixed;
+				top: 0;
+				left: 0;
+				width: 100%;
+				z-index: 9999;
+				text-align: center;
+			"
+    >
+        <strong>Warning!</strong> You need to enable JavaScript to use this
+        site.
+    </div>
+</noscript>
+
+<body>
+<div class="container">
+    <div class="row">
+        <div class="col-md-6 offset-md-3">
+            <h1 class="text-center text-primary mt-5">
+                <i class="fas fa-user-plus"></i> Register
+            </h1>
+            <form class="mt-5">
+                <div class="form-group">
+                    <label for="username">
+                        <i class="fas fa-user"></i> Username
+                    </label>
+                    <input
+                            class="form-control"
+                            id="username"
+                            placeholder="Enter username"
+                            type="text"
+                    />
+                </div>
+                <div class="form-group">
+                    <label for="password">
+                        <i class="fas fa-key"></i> Password
+                    </label>
+                    <input class="form-control" id="password" placeholder="Enter password" type="password"/>
+                </div>
+                <div class="form-group">
+                    <label for="confirmPassword">
+                        <i class="fas fa-key"></i> Confirm Password
+                    </label>
+                    <input class="form-control" id="confirmPassword" placeholder="Confirm password" type="password"/>
+                </div>
+                <button
+                        class="btn btn-primary btn-block"
+                        id="register"
+                        type="button"
+                >
+                    Register
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+<div class="container">
+    <div class="row">
+        <div class="col-md-6 offset-md-3">
+            <p class="text-center">
+                <a href="{{ url_for('login_page') }}">Already a user?</a>
+            </p>
+        </div>
+    </div>
+    <script crossorigin="anonymous"
+            integrity="sha512-uaZ0UXmB7NHxAxQawA8Ow2wWjdsedpRu7nJRSoI2mjnwtY8V5YiCWavoIpo1AhWPMLiW5iEeavmA3JJ2+1idUg=="
+            referrerpolicy="no-referrer"
+            src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/2.11.7/umd/popper.min.js"></script>
+    <script crossorigin="anonymous"
+            integrity="sha512-pumBsjNRGGqkPzKHndZMaAG+bir374sORyzM3uulLV14lN5LyykqNk8eEeUlUkB3U0M4FApyaHraT65ihJhDpQ=="
+            referrerpolicy="no-referrer"
+            src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
+    <script crossorigin="anonymous"
+            integrity="sha512-rstIgDs0xPgmG6RX1Aba4KV5cWJbAMcvRCVmglpam9SoHZiUCyQVDdH2LPlxoHtrv17XWblE/V/PP+Tr04hbtA=="
+            referrerpolicy="no-referrer"
+            src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.5/jquery.validate.min.js"></script>
+    <script crossorigin="anonymous"
+            integrity="sha512-6S5LYNn3ZJCIm0f9L6BCerqFlQ4f5MwNKq+EthDXabtaJvg3TuFLhpno9pcm+5Ynm6jdA9xfpQoMz2fcjVMk9g=="
+            referrerpolicy="no-referrer"
+            src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.5/additional-methods.min.js"></script>
+    <script>
+        const alertCool = (message, type) => {
+            $(".alert").remove();
+
+            const alert = document.createElement("div");
+            alert.classList.add("alert");
+            alert.classList.add("alert-dismissible");
+            alert.classList.add(`alert-${type}`);
+            alert.classList.add("footer");
+            alert.classList.add("fixed-bottom");
+            alert.classList.add("mt-5");
+            alert.classList.add("p-3");
+            alert.classList.add("shadow");
+            alert.classList.add("rounded");
+            alert.classList.add("text-center");
+            alert.classList.add("w-50");
+            alert.classList.add("mx-auto");
+
+            alert.innerHTML = `<button type="button" class="close" data-dismiss="alert">&times;</button>${message}`;
+            alert.style.transition = "all 0.5s ease-in-out";
+            alert.style.animation = "fadeIn 0.5s ease-in-out";
+            document.body.appendChild(alert);
+            $(".close").click(() => $(".alert").remove());
+
+            const fadeIn = document.createElement("style");
+            fadeIn.innerHTML = `
+					@keyframes fadeIn {
+						from {
+							opacity: 0;
+						}
+						to {
+							opacity: 1;
+						}
+					}
+				`;
+            document.head.appendChild(fadeIn);
+
+            setTimeout(() => {
+                alert.remove();
+            }, 50000);
+        };
+
+        $(document).ready(function () {
+            $("#register").click(function (e) {
+                e.preventDefault();
+
+                let username = $("#username").val();
+                let password = $("#password").val();
+                let confirmPassword = $("#confirmPassword").val();
+
+                if (!username) {
+                    alertCool("Username is required", "danger");
+                    return;
+                } else if (!password) {
+                    alertCool("Password is required", "danger");
+                    return;
+                } else if (!confirmPassword) {
+                    alertCool("Confirm your password", "danger");
+                    return;
+                } else if (password !== confirmPassword) {
+                    alertCool("Passwords does not match", "danger");
+                    return;
+                }
+
+                $.ajax({
+                    url: `/register`,
+                    type: "POST",
+                    data: {
+                        username: username,
+                        password: password,
+                    },
+                    success: function (data) {
+                        if (data.message === "AlreadyTaken") {
+                            alertCool(
+                                "Username is already taken",
+                                "danger"
+                            );
+                            return;
+                        }
+
+                        alertCool(
+                            "Registration successful!",
+                            "success"
+                        );
+                        setTimeout(
+                            () => (window.location.href = `/login`),
+                            5000
+                        );
+                    },
+                    error: function (err) {
+                        alertCool("Registration failed!", "danger");
+                    },
+                });
+            });
+        });
+
+    </script>
+</div>
+</body>
+<style>
+    .alert-success {
+        background-color: #4caf50;
+    }
+
+    .alert-danger {
+        background-color: #f44336;
+    }
+
+    .alert-warning {
+        background-color: #ff9800;
+    }
+
+    .alert-info {
+        background-color: #2196f3;
+    }
+
+    .alert-dismissible .close:not(:disabled):not(.disabled) {
+        cursor: pointer;
+    }
+
+    .alert-dismissible .close:not(:disabled):not(.disabled):hover {
+        color: #fff;
+        text-decoration: none;
+    }
+
+    .alert-dismissible .close:not(:disabled):not(.disabled):focus {
+        outline: 0;
+    }
+
+    .alert-dismissible .close:not(:disabled):not(.disabled):active {
+        outline: 0;
+        -webkit-box-shadow: none;
+        box-shadow: none;
+    }
+
+    .alert-dismissible .close:not(:disabled):not(.disabled).active {
+        color: #fff;
+        text-decoration: none;
+    }
+
+    .alert-dismissible .close:not(:disabled):not(.disabled).active:hover {
+        color: #fff;
+        text-decoration: none;
+    }
+
+    .alert-dismissible .close:not(:disabled):not(.disabled).active:focus {
+        outline: 0;
+    }
+
+    .alert-dismissible .close:not(:disabled):not(.disabled).active:active {
+        outline: 0;
+        -webkit-box-shadow: none;
+        box-shadow: none;
+    }
+
+    .alert-dismissible .close:not(:disabled):not(.disabled).active:not(:disabled):not(.disabled) {
+        cursor: pointer;
+    }
+
+    .alert-dismissible .close:not(:disabled):not(.disabled).active:not(:disabled):not(.disabled):hover {
+        color: #fff;
+        text-decoration: none;
+    }
+
+</style>
+
+</html>

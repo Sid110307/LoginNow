@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"/>
+    <meta content="ie=edge" http-equiv="X-UA-Compatible"/>
+    <meta content="width=device-width, initial-scale=1" name="viewport"/>
+    <title>Login</title>
+    <link crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css"
+          integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65" rel="stylesheet"/>
+    <link crossorigin="anonymous"
+          href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.2.1/css/fontawesome.min.css"
+          integrity="sha384-QYIZto+st3yW+o8+5OHfT6S482Zsvz2WfOzpFSXMF9zqeLcFV0/wlZpMtyFcZALm" rel="stylesheet">
+</head>
+<noscript>
+    <div
+            class="alert alert-danger"
+            role="alert"
+            style="
+				position: fixed;
+				top: 0;
+				left: 0;
+				width: 100%;
+				z-index: 9999;
+				text-align: center;
+			"
+    >
+        <strong>Warning!</strong> You need to enable JavaScript to use this
+        site.
+    </div>
+</noscript>
+
+<body>
+<div class="container">
+    <div class="row">
+        <div class="col-md-6 offset-md-3">
+            <h1 class="text-center text-primary mt-5">
+                <i class="fas fa-user-lock"></i> Login
+            </h1>
+            <form class="mt-5">
+                <div class="form-group">
+                    <label for="username">
+                        <i class="fas fa-user"></i> Username
+                    </label>
+                    <input
+                            class="form-control"
+                            id="username"
+                            placeholder="Enter username"
+                            type="text"
+                    />
+                </div>
+                <div class="form-group">
+                    <label for="password">
+                        <i class="fas fa-key"></i> Password
+                    </label>
+                    <input
+                            class="form-control"
+                            id="password"
+                            placeholder="Enter password"
+                            type="password"
+                    />
+                </div>
+                <button
+                        class="btn btn-primary btn-block"
+                        id="login"
+                        type="button"
+                >
+                    Login
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+<div class="container">
+    <div class="row">
+        <div class="col-md-6 offset-md-3">
+            <p class="text-center">
+                <a href="{{ url_for('root') }}">New user?</a>
+            </p>
+        </div>
+    </div>
+    <script
+            crossorigin="anonymous"
+            integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
+            src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
+    ></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.1/jquery.validate.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.1/additional-methods.min.js"></script>
+    <script>
+        const alertCool = (message, type) => {
+            $(".alert").remove();
+
+            const alert = document.createElement("div");
+            alert.classList.add("alert");
+            alert.classList.add("alert-dismissible");
+            alert.classList.add(`alert-${type}`);
+            alert.classList.add("footer");
+            alert.classList.add("fixed-bottom");
+            alert.classList.add("mt-5");
+            alert.classList.add("p-3");
+            alert.classList.add("shadow");
+            alert.classList.add("rounded");
+            alert.classList.add("text-center");
+            alert.classList.add("w-50");
+            alert.classList.add("mx-auto");
+
+            alert.innerHTML = `<button type="button" class="close" data-dismiss="alert">&times;</button>${message}`;
+            alert.style.transition = "all 0.5s ease-in-out";
+            alert.style.animation = "fadeIn 0.5s ease-in-out";
+            document.body.appendChild(alert);
+            $(".close").click(() => $(".alert").remove());
+
+            const fadeIn = document.createElement("style");
+            fadeIn.innerHTML = `
+					@keyframes fadeIn {
+						from {
+							opacity: 0;
+						}
+						to {
+							opacity: 1;
+						}
+					}
+				`;
+            document.head.appendChild(fadeIn);
+
+            setTimeout(() => {
+                alert.remove();
+            }, 50000);
+        };
+
+        $(document).ready(function () {
+            $("#login").click(function (e) {
+                e.preventDefault();
+
+                let username = $("#username").val();
+                let password = $("#password").val();
+
+                if (!username) {
+                    alertCool("Username is required", "danger");
+                    return;
+                } else if (!password) {
+                    alertCool("Password is required", "danger");
+                    return;
+                }
+
+                $.ajax({
+                    url: `/loginForm`,
+                    type: "POST",
+                    data: {
+                        username: username,
+                        password: password,
+                    },
+                    success: function (data) {
+                        alertCool("Login successful!", "success");
+                        setTimeout(
+                            () => (window.location.href = `/home`),
+                            5000
+                        );
+                    },
+                    error: function (err) {
+                        if (!err.status == 405)
+                            alertCool("Login failed!", "danger");
+                    },
+                });
+            });
+        });
+    </script>
+</div>
+</body>
+<style>
+    .alert-success {
+        background-color: #4caf50;
+    }
+
+    .alert-danger {
+        background-color: #f44336;
+    }
+
+    .alert-warning {
+        background-color: #ff9800;
+    }
+
+    .alert-info {
+        background-color: #2196f3;
+    }
+
+    .alert-dismissible .close:not(:disabled):not(.disabled) {
+        cursor: pointer;
+    }
+
+    .alert-dismissible .close:not(:disabled):not(.disabled):hover {
+        color: #fff;
+        text-decoration: none;
+    }
+
+    .alert-dismissible .close:not(:disabled):not(.disabled):focus {
+        outline: 0;
+    }
+
+    .alert-dismissible .close:not(:disabled):not(.disabled):active {
+        outline: 0;
+        -webkit-box-shadow: none;
+        box-shadow: none;
+    }
+
+    .alert-dismissible .close:not(:disabled):not(.disabled).active {
+        color: #fff;
+        text-decoration: none;
+    }
+
+    .alert-dismissible .close:not(:disabled):not(.disabled).active:hover {
+        color: #fff;
+        text-decoration: none;
+    }
+
+    .alert-dismissible .close:not(:disabled):not(.disabled).active:focus {
+        outline: 0;
+    }
+
+    .alert-dismissible .close:not(:disabled):not(.disabled).active:active {
+        outline: 0;
+        -webkit-box-shadow: none;
+        box-shadow: none;
+    }
+
+    .alert-dismissible
+    .close:not(:disabled):not(.disabled).active:not(:disabled):not(
+				.disabled
+			) {
+        cursor: pointer;
+    }
+
+    .alert-dismissible
+    .close:not(:disabled):not(.disabled).active:not(:disabled):not(
+				.disabled
+			):hover {
+        color: #fff;
+        text-decoration: none;
+    }
+</style>
+</html>

@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8"/>
+    <meta content="IE=edge" http-equiv="X-UA-Compatible"/>
+    <title>Logged in as {{ user }}</title>
+    <meta content="width=device-width, initial-scale=1" name="viewport"/>
+    <link crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css"
+          integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65" rel="stylesheet"/>
+    <link crossorigin="anonymous"
+          href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.2.1/css/fontawesome.min.css"
+          integrity="sha384-QYIZto+st3yW+o8+5OHfT6S482Zsvz2WfOzpFSXMF9zqeLcFV0/wlZpMtyFcZALm" rel="stylesheet">
+</head>
+<body>
+<noscript>
+    <div class="alert alert-danger" role="alert"
+         style="position: fixed; top: 0; left: 0; width: 100%; z-index: 9999; text-align: center;">
+        <strong>Warning!</strong>
+        <p>You need to enable JavaScript to use this site.</p>
+    </div>
+</noscript>
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="col-md-12">
+                <h3 class="text-center mt-5">
+                    <i class="fas fa-user-circle"></i>
+                    <span>Logged in as: {{ user }}</span>
+                </h3>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label for="name">Name</label>
+                                                <input class="form-control" id="name" name="name" type="text"/>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label for="email">Email</label>
+                                                <input class="form-control" id="email" name="email" type="email"/>
+                                                <small class="form-text text-muted" id="emailHelp">We'll never share
+                                                    your email with anyone.</small>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label for="password">Password</label>
+                                                <input class="form-control" id="password" name="password"
+                                                       type="password"/>
+                                                <small class="form-text text-muted" id="passwordHelp">
+                                                    Password must be at least 8 characters long.
+                                                    <br/>
+                                                    <strong>Must contain at least one number.</strong>
+                                                    <br/>
+                                                    <strong>Must contain at least one letter.</strong>
+                                                    <br/>
+                                                    <strong>Must contain at least one special character.</strong>
+                                                </small>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-12">
+                                            <button class="btn btn-primary" id="save" type="submit">Save</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row mt-5">
+                        <div class="col-md-12">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h4 class="card-title">Added Users</h4>
+                                </div>
+                                <div class="card-body">
+                                    <div class="table-responsive">
+                                        <table class="table" id="users">
+                                            <thead class="text-default">
+                                            <tr>
+                                                <th><input id="selectAll" type="checkbox"/></th>
+                                                <th>Name</th>
+                                                <th>Email</th>
+                                            </tr>
+                                            </thead>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script crossorigin="anonymous"
+        integrity="sha256-oP6HI9z1XaZNBrJURtCoUT5SUnxFr8s3BzRl+cbzUq8="
+        src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+<script crossorigin="anonymous"
+        integrity="sha384-kenU1KFdBIe4zVF0s0G1M5b4hcpxyD9F7jL+jjXkk+Q2h455rYXK/7HAuoJl+0I4"
+        src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    const alertCool = (message, type) => {
+        const alertElement = $(".alert");
+        alertElement.remove();
+
+        const alert = document.createElement("div");
+        alert.classList.add("alert");
+        alert.classList.add("alert-dismissible");
+        alert.classList.add(`alert-${type}`);
+        alert.classList.add("footer");
+        alert.classList.add("fixed-bottom");
+        alert.classList.add("mt-5");
+        alert.classList.add("p-3");
+        alert.classList.add("shadow");
+        alert.classList.add("rounded");
+        alert.classList.add("text-center");
+        alert.classList.add("w-50");
+        alert.classList.add("mx-auto");
+
+        alert.innerHTML = `<button type="button" class="close" data-dismiss="alert">&times;</button>${message}`;
+        alert.style.transition = "all 0.5s ease-in-out";
+        alert.style.animation = "fadeIn 0.5s ease-in-out";
+        document.body.appendChild(alert);
+        $(".close").click(() => alertElement.remove());
+
+        const fadeIn = document.createElement("style");
+        fadeIn.innerHTML = "@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }";
+        document.head.appendChild(fadeIn);
+
+        setTimeout(() => alert.remove(), 5000);
+    };
+
+    window.onload = function () {
+        $.ajax({
+            type: "GET",
+            url: "/getUsers",
+            success: function (response) {
+                $("#addUser").modal("hide");
+                $("#name").val("");
+                $("#email").val("");
+                $("#password").val("");
+
+                let users = JSON.parse(JSON.stringify(response));
+                let name = users.name;
+                let email = users.email;
+
+                for (let i = 0; i < name.length; i++) {
+                    $("#users").append(
+                        `<tr>
+									<td><input type="checkbox" class="checkbox" id="${email[i]}" /></td>
+									<td>${name[i]}</td>
+									<td>${email[i]}</td>
+									<td>
+										<button
+											type="button"
+											class="btn btn-primary 
+											data-toggle="modal"
+											data-target="#editUser"
+											data-name="${name[i]}"
+											data-email="${email[i]}"
+										>
+										<i class="fas fa-edit"></i>  Edit
+										</button>
+									</td>
+									<td>
+										<button
+											type="button"
+											class="btn btn-danger"
+											data-toggle="modal"
+											data-target="#delete_user"
+											data-name="${name[i]}"
+											data-email="${email[i]}"
+										>
+											<i class="fas fa-trash-alt"></i> Delete
+										</button>
+									</td>
+								</tr>`
+                    );
+                }
+            },
+            error: function (data) {
+                console.log(data);
+                alertCool("Something went wrong", "danger");
+            },
+        });
+    };
+
+    document.getElementById("save").addEventListener("click", function () {
+        let name = document.getElementById("name").value;
+        let email = document.getElementById("email").value;
+        let password = document.getElementById("password").value;
+
+        if (name === "") {
+            alertCool("Please enter name", "danger");
+            return;
+        } else if (email === "") {
+            alertCool("Please enter email", "danger");
+            return;
+        } else if (password === "") {
+            alertCool("Please enter password", "danger");
+            return;
+        } else if (!/^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/.test(email)) {
+            alertCool("Please enter a valid email", "danger");
+            return;
+        } else if (password.length < 8) {
+            alertCool("Password must be at least 8 characters", "danger");
+            return;
+        } else if (!/[A-Z]/.test(password)) {
+            alertCool("Password must contain at least one uppercase letter", "danger");
+            return;
+        } else if (!/[a-z]/.test(password)) {
+            alertCool("Password must contain at least one lowercase letter", "danger");
+            return;
+        } else if (!/[0-9]/.test(password)) {
+            alertCool("Password must contain at least one number", "danger");
+            return;
+        } else if (!/[!@#$%^&\[\\\]{}()*+=_\-~`.]/.test(password)) {
+            alertCool("Password must contain at least one special character", "danger");
+            return;
+        }
+
+        $.ajax({
+            type: "POST",
+            url: "/saveUser",
+            data: {name: name, email: email, password: password},
+            success: function (response) {
+                console.log(response);
+
+                $("#addUser").modal("hide");
+                $("#name").val("");
+                $("#email").val("");
+                $("#password").val("");
+
+                alertCool(
+                    `User ${name} has been added successfully`,
+                    "success"
+                );
+                location.reload();
+            },
+            error: function (data) {
+                alertCool(`User could not be added: ${data}`, "danger");
+            },
+        });
+    });
+
+    const deleteModal = document.createElement("div");
+    deleteModal.classList.add("modal", "fade");
+    deleteModal.setAttribute("id", "delete_user");
+    deleteModal.setAttribute("tabindex", "-1");
+    deleteModal.setAttribute("role", "dialog");
+    deleteModal.setAttribute("aria-labelledby", "exampleModalLabel");
+    deleteModal.setAttribute("aria-hidden", "true");
+    deleteModal.innerHTML = `
+				<div class="modal-dialog" role="document">
+					<div class="modal-content">
+						<div class="modal-header">
+							<h5 class="modal-title" id="exampleModalLabel">
+								Delete User
+							</h5>
+							<button
+								type="button"
+								class="close"
+								data-dismiss="modal"
+								aria-label="Close"
+							>
+								<span aria-hidden="true">&times;</span>
+							</button>
+						</div>
+						<div class="modal-body">
+							<p>Are you sure you want to delete this user?</p>
+							<strong>This action cannot be undone.</strong>
+						</div>
+						<div class="modal-footer">
+							<button
+								type="button"
+								class="btn btn-secondary"
+								data-dismiss="modal"
+							>
+								Close
+							</button>
+							<button
+								type="button"
+								class="btn btn-danger"
+								id="deleteUserBtn"
+							>
+								Delete
+							</button>
+						</div>
+					</div>
+				</div>
+			`;
+    document.body.appendChild(deleteModal);
+
+    const editModal = document.createElement("div");
+    editModal.classList.add("modal", "fade");
+    editModal.setAttribute("id", "editUser");
+    editModal.setAttribute("tabindex", "-1");
+    editModal.setAttribute("role", "dialog");
+    editModal.setAttribute("aria-labelledby", "exampleModalLabel");
+    editModal.setAttribute("aria-hidden", "true");
+    editModal.innerHTML = `
+				<div class="modal-dialog" role="document">
+					<div class="modal-content">
+						<div class="modal-header">
+							<h5 class="modal-title" id="exampleModalLabel">
+								Edit User
+							</h5>
+							<button
+								type="button"
+								class="close"
+								data-dismiss="modal"
+								aria-label="Close"
+							>
+								<span aria-hidden="true">&times;</span>
+							</button>
+						</div>
+						<div class="modal-body">
+							<div class="form-group">
+								<label for="editName">Name</label>
+								<input
+									type="text"
+									class="form-control"
+									id="editName"
+									placeholder="Name"
+								/>
+							</div>
+							<div class="form-group">
+								<label for="editEmail">Email</label>
+								<input
+									type="email"
+									class="form-control"
+									id="editEmail"
+									placeholder="Email"
+								/>
+							</div>
+							</div>
+							<div class="modal-footer">
+								<button
+									type="button"
+									class="btn btn-secondary"
+									data-dismiss="modal"
+								>
+								<i class="fas fa-times"></i> Close
+								</button>
+								<button
+									type="button"
+									class="btn btn-success"
+									id="editUserBtn"
+								>
+									<i class="fas fa-check"></i> Save Changes
+								</button>
+							</div>
+						</div>
+					</div>
+				</div>
+			`;
+    document.body.appendChild(editModal);
+
+    document.getElementById("editUserBtn").addEventListener("click", () => {
+        const name = document.getElementById("editName").value;
+        const email = document.getElementById("editEmail").value;
+        const id = document.getElementById("editUserBtn").getAttribute("data-id");
+
+        $.ajax({
+            type: "POST",
+            url: "/editUser",
+            data: {name: name, email: email, id: id},
+            success: function (data) {
+                if (data.success) {
+                    const table = document.getElementById("usersTable");
+                    const row = table.querySelector(`tr[data-id="${id}"]`);
+                    row.querySelector("td:nth-child(2)").innerHTML = name;
+                    row.querySelector("td:nth-child(3)").innerHTML = email;
+
+                    $("#editUser").modal("hide");
+                } else alertCool(data.message, "danger");
+            },
+            error: function (err) {
+                console.log(err);
+                alertCool(`Something went wrong: ${err}`, "danger");
+            }
+        });
+    });
+
+    document.getElementById("deleteUserBtn").addEventListener("click", function () {
+        let name = document.getElementById("name").value;
+        let email = document.getElementById("email").value;
+
+        $.ajax({
+            type: "POST",
+            url: "/deleteUser",
+            data: {name: name, email: email},
+            success: function (response) {
+                console.log(response);
+
+                $("#deleteUserBtn").modal("hide");
+                $("#users").empty();
+                getUsers();
+
+                alertCool(`User ${name} has been deleted successfully`, "success");
+            },
+            error: function (data) {
+                console.log(data);
+                alertCool(`Something went wrong: ${data}`, "danger");
+            },
+        });
+    });
+</script>
+</body>
+</html>
